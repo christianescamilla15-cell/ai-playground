@@ -406,18 +406,33 @@ function TourOverlay({ tourStep, lang, onNext, onSkip, onSetLang }) {
         height: rect.height + pad * 2,
       })
 
-      // Position tooltip
-      let ttTop = rect.bottom + pad + 12 + window.scrollY
-      let ttLeft = rect.left
-      // If tooltip would go off bottom, place above
-      if (rect.bottom + 250 > window.innerHeight) {
-        ttTop = rect.top - 220 + window.scrollY
+      // Position tooltip with viewport clamping
+      const tooltipHeight = 200
+      const tooltipWidth = 380
+      const vpPad = 16
+      let ttTop, ttLeft = rect.left
+      const roomBelow = window.innerHeight - rect.bottom
+      const roomAbove = rect.top
+
+      if (roomBelow >= tooltipHeight + vpPad + 12) {
+        // Position below element
+        ttTop = rect.bottom + 12 + window.scrollY
+      } else if (roomAbove >= tooltipHeight + vpPad + 12) {
+        // Position above element
+        ttTop = rect.top - tooltipHeight - 12 + window.scrollY
+      } else {
+        // Fallback: fixed bottom-center (handled in render)
+        setTooltipStyle({ fallback: true })
+        return
       }
-      // Clamp left
-      if (ttLeft + 380 > window.innerWidth) {
-        ttLeft = window.innerWidth - 400
-      }
-      if (ttLeft < 10) ttLeft = 10
+
+      // Clamp top to viewport
+      const scrollY = window.scrollY
+      ttTop = Math.max(vpPad + scrollY, ttTop)
+      ttTop = Math.min(window.innerHeight - tooltipHeight - vpPad + scrollY, ttTop)
+      // Clamp left to viewport
+      ttLeft = Math.max(vpPad, ttLeft)
+      ttLeft = Math.min(window.innerWidth - tooltipWidth - vpPad, ttLeft)
 
       setTooltipStyle({ top: ttTop, left: ttLeft })
     }
@@ -478,7 +493,11 @@ function TourOverlay({ tourStep, lang, onNext, onSkip, onSetLang }) {
         <div className="tour-backdrop-fill" />
       )}
       {tooltipStyle && (
-        <div className="tour-tooltip" style={{ top: tooltipStyle.top, left: tooltipStyle.left }}>
+        <div className="tour-tooltip" style={
+          tooltipStyle.fallback
+            ? { position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', width: Math.min(400, window.innerWidth - 32), top: 'auto', zIndex: 10001 }
+            : { top: tooltipStyle.top, left: tooltipStyle.left }
+        }>
           <div className="tour-step-counter">Step {tourStep} of {TOUR_TOTAL - 1} &middot; <button className="tour-skip" onClick={onSkip}>{TOUR_SKIP[lang]}</button></div>
           <h3>{stepData.title[lang]}</h3>
           <p>{stepData.text[lang]}</p>
@@ -542,11 +561,16 @@ function App() {
 
     switch (next) {
       case 1:
-        // Just highlight sidebar
+        // Highlight sidebar + reset to chat tab
+        setTab('chat')
         break
       case 2:
         // Switch to Analyze tab
         setTab('analyze')
+        setTimeout(() => {
+          const el = document.querySelector('[data-tour="analyze-panel"]')
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 100)
         break
       case 3:
         // Auto-trigger analysis with sample
@@ -664,6 +688,17 @@ function App() {
         </div>
       </div>
 
+      {/* Fixed Skip Tour button — always accessible */}
+      {tourActive && (
+        <button onClick={handleTourSkip} style={{
+          position: 'fixed', top: 16, right: 16, zIndex: 99999,
+          background: 'rgba(30,41,59,0.95)', border: '1px solid #475569',
+          color: '#94a3b8', padding: '8px 16px', borderRadius: 8,
+          cursor: 'pointer', fontSize: 13, backdropFilter: 'blur(8px)',
+        }}>
+          {lang === 'en' ? '\u2715 Skip Tour' : '\u2715 Saltar Tour'}
+        </button>
+      )}
       {/* Tour overlay */}
       {tourActive && (
         <TourOverlay
