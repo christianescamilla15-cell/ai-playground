@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 
 /* ───────── i18n ───────── */
 const T = {
@@ -35,6 +35,10 @@ const T = {
     chars: 'Characters', words: 'Words', sentences: 'Sentences',
     metrics: 'Metrics', by_model: 'By Model', by_usecase: 'By Use Case',
     requests: 'Requests',
+    load_doc: 'Load Document', load_different: 'Load Different Document',
+    answer_title: 'Answer', sources: 'Sources', relevance: 'Relevance',
+    generated_content: 'Generated Content',
+    pipeline_steps: ['Chunking', 'Keywords', 'Sentiment', 'Entities', 'Risks'],
   },
   es: {
     title: 'AI Playground',
@@ -69,8 +73,90 @@ const T = {
     chars: 'Caracteres', words: 'Palabras', sentences: 'Oraciones',
     metrics: 'Metricas', by_model: 'Por Modelo', by_usecase: 'Por Caso de Uso',
     requests: 'Solicitudes',
+    load_doc: 'Cargar Documento', load_different: 'Cargar Otro Documento',
+    answer_title: 'Respuesta', sources: 'Fuentes', relevance: 'Relevancia',
+    generated_content: 'Contenido Generado',
+    pipeline_steps: ['Fragmentacion', 'Palabras clave', 'Sentimiento', 'Entidades', 'Riesgos'],
   }
 }
+
+/* ───────── Tour i18n ───────── */
+const TOUR_TEXT = {
+  0: {
+    title: { en: 'AI Playground \u2014 Interactive AI Demo', es: 'AI Playground \u2014 Demo Interactiva de IA' },
+    text: {
+      en: 'Explore 7 AI capabilities side by side: Chat, Document Analysis, Q&A, Content Generation, Data Extraction, Translation, and Model Comparison. Try each one with sample data and see real-time cost tracking.\n\nLet me give you a guided tour!',
+      es: 'Explora 7 capacidades de IA lado a lado: Chat, An\u00e1lisis de Documentos, Q&A, Generaci\u00f3n de Contenido, Extracci\u00f3n de Datos, Traducci\u00f3n, y Comparaci\u00f3n de Modelos. Prueba cada una con datos de ejemplo y observa el seguimiento de costos en tiempo real.\n\n\u00a1D\u00e9jame darte un tour guiado!'
+    },
+    btn: { en: 'Start Tour \u2192', es: 'Iniciar Tour \u2192' }
+  },
+  1: {
+    title: { en: 'Navigation & Models', es: 'Navegaci\u00f3n y Modelos' },
+    text: {
+      en: 'The sidebar has 7 use-case tabs: Chat, Analyze, Q&A, Generate, Extract, Translate, and Compare. Below them you can switch between Claude, GPT-4o, and Gemini Pro.',
+      es: 'La barra lateral tiene 7 pesta\u00f1as: Chat, Analizar, P&R, Generar, Extraer, Traducir y Comparar. Debajo puedes cambiar entre Claude, GPT-4o y Gemini Pro.'
+    },
+    btn: { en: 'Next \u2192', es: 'Siguiente \u2192' }
+  },
+  2: {
+    title: { en: 'Document Analysis', es: 'An\u00e1lisis de Documentos' },
+    text: {
+      en: 'The Analyze tab processes any text and extracts keywords, sentiment, entities, and risk flags \u2014 all client-side. Let me run a demo for you!',
+      es: 'La pesta\u00f1a Analizar procesa cualquier texto y extrae palabras clave, sentimiento, entidades y alertas de riesgo \u2014 todo en el cliente. \u00a1D\u00e9jame ejecutar una demo!'
+    },
+    btn: { en: 'Try it \u2192', es: 'Probar \u2192' }
+  },
+  3: {
+    title: { en: 'Analysis Results', es: 'Resultados del An\u00e1lisis' },
+    text: {
+      en: 'Here are the results: keyword frequency, sentiment gauge, extracted entities (money, dates, percentages), and risk flags for legal documents.',
+      es: 'Aqu\u00ed est\u00e1n los resultados: frecuencia de palabras clave, medidor de sentimiento, entidades extra\u00eddas (dinero, fechas, porcentajes) y alertas de riesgo para documentos legales.'
+    },
+    btn: { en: 'Next \u2192', es: 'Siguiente \u2192' }
+  },
+  4: {
+    title: { en: 'Model Comparison', es: 'Comparaci\u00f3n de Modelos' },
+    text: {
+      en: 'The Compare tab sends the same prompt to all 3 models simultaneously and ranks them by speed, cost, and detail. Watch!',
+      es: 'La pesta\u00f1a Comparar env\u00eda el mismo prompt a los 3 modelos simult\u00e1neamente y los clasifica por velocidad, costo y detalle. \u00a1Mira!'
+    },
+    btn: { en: 'Try it \u2192', es: 'Probar \u2192' }
+  },
+  5: {
+    title: { en: 'Comparison Results', es: 'Resultados de Comparaci\u00f3n' },
+    text: {
+      en: 'Each model card shows its response, latency, token count, and cost. Winner badges highlight the Fastest, Cheapest, and Most Detailed model.',
+      es: 'Cada tarjeta muestra la respuesta, latencia, tokens y costo. Las insignias resaltan el modelo M\u00e1s R\u00e1pido, M\u00e1s Barato y M\u00e1s Detallado.'
+    },
+    btn: { en: 'Next \u2192', es: 'Siguiente \u2192' }
+  },
+  6: {
+    title: { en: 'Cost Tracker', es: 'Rastreador de Costos' },
+    text: {
+      en: 'Every action tracks token usage and estimated cost. The metrics panel shows totals by model and by use case \u2014 like a real production dashboard.',
+      es: 'Cada acci\u00f3n registra el uso de tokens y costo estimado. El panel de m\u00e9tricas muestra totales por modelo y por caso de uso \u2014 como un dashboard de producci\u00f3n real.'
+    },
+    btn: { en: 'Next \u2192', es: 'Siguiente \u2192' }
+  },
+  7: {
+    title: { en: 'Translation', es: 'Traducci\u00f3n' },
+    text: {
+      en: 'The Translate tab supports English, Spanish, French, Portuguese, and German. Let me show you a quick demo!',
+      es: 'La pesta\u00f1a Traducir soporta ingl\u00e9s, espa\u00f1ol, franc\u00e9s, portugu\u00e9s y alem\u00e1n. \u00a1D\u00e9jame mostrarte una demo r\u00e1pida!'
+    },
+    btn: { en: 'Try it \u2192', es: 'Probar \u2192' }
+  },
+  8: {
+    title: { en: 'Tour Complete!', es: '\u00a1Tour Completado!' },
+    text: {
+      en: 'You\'ve seen Analyze, Compare, and Translate in action. Feel free to explore Chat, Generate, Extract, and Q&A on your own \u2014 they all work the same way with sample data and real-time cost tracking!',
+      es: '\u00a1Has visto Analizar, Comparar y Traducir en acci\u00f3n! Explora Chat, Generar, Extraer y P&R por tu cuenta \u2014 todos funcionan igual con datos de ejemplo y seguimiento de costos en tiempo real!'
+    },
+    btn: { en: 'Finish Tour \u2713', es: 'Finalizar Tour \u2713' }
+  }
+}
+const TOUR_TOTAL = 9
+const TOUR_SKIP = { en: 'Skip Tour', es: 'Saltar Tour' }
 
 /* ───────── Sample data ───────── */
 const SAMPLES = {
@@ -94,7 +180,7 @@ function mockGenerate(prompt, model = 'claude-sonnet', system = '') {
       ? "Here's a concise summary:\n\n**Key Points:**\n1. Revenue grew 23% YoY to $4.2M\n2. Operating margins improved to 18%\n3. Customer satisfaction at 4.7/5.0\n\n**Bottom Line:** Strong performance with positive momentum."
       : 'Summary: Q4 2025 financial results. Revenue: $4.2M (+23% YoY). Operating margin: 18%. Customer satisfaction: 4.7/5.0. Key risk: Increasing competition.'
   } else if (p.includes('translat') || p.includes('traduc')) {
-    text = p.includes('spanish') || p.includes('espanol') || p.includes('español')
+    text = p.includes('spanish') || p.includes('espanol') || p.includes('espa\u00f1ol')
       ? 'El documento analizado presenta tres areas principales: estrategia organizacional, desempeno financiero y posicionamiento de mercado.'
       : 'The analyzed document presents three main areas: organizational strategy, financial performance, and market positioning.'
   } else if (p.includes('extract') || p.includes('extrae')) {
@@ -102,7 +188,7 @@ function mockGenerate(prompt, model = 'claude-sonnet', system = '') {
   } else if (p.includes('content') || p.includes('generat') || p.includes('write') || p.includes('escrib') || p.includes('draft') || p.includes('redact')) {
     text = "Here's a professional summary for your stakeholders:\n\nQ4 Performance Highlights:\n- Revenue growth of 23% year-over-year, reaching $4.2M\n- Operating margins improved to 18%\n- Customer satisfaction scores hit an all-time high of 4.7/5.0\n- International expansion contributed 12% of total revenue\n\nKey Takeaway: The company is on a strong growth trajectory."
   } else if (p.includes('risk') || p.includes('riesgo')) {
-    text = 'Key risks identified:\n\n1. **Market Competition** — Three new competitors entered the segment in Q4\n2. **Currency Risk** — BRL and COP volatility affecting LATAM margins\n3. **Talent Acquisition** — Engineering hiring taking 45 days (target: 30)\n4. **Infrastructure Costs** — Cloud costs grew 31% vs 23% revenue growth'
+    text = 'Key risks identified:\n\n1. **Market Competition** \u2014 Three new competitors entered the segment in Q4\n2. **Currency Risk** \u2014 BRL and COP volatility affecting LATAM margins\n3. **Talent Acquisition** \u2014 Engineering hiring taking 45 days (target: 30)\n4. **Infrastructure Costs** \u2014 Cloud costs grew 31% vs 23% revenue growth'
   } else {
     text = style === 'claude'
       ? "Hello! I'm your AI assistant. I can help you with document analysis, content generation, data extraction, and translation. What would you like to explore today?"
@@ -239,6 +325,27 @@ textarea{min-height:120px}
 .bottom-btn.active{color:#6366F1;background:#6366F133}
 .voice-widget{position:fixed;bottom:20px;left:20px;z-index:80;width:48px;height:48px;border-radius:50%;background:#6366F1;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px #6366F166;transition:transform .2s}
 .voice-widget:hover{transform:scale(1.1)}
+
+/* ── Tour overlay ── */
+.tour-backdrop{position:fixed;inset:0;z-index:9998;pointer-events:none}
+.tour-backdrop-fill{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9998;pointer-events:auto}
+.tour-spotlight{position:absolute;z-index:9999;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.65);pointer-events:none;transition:all .4s ease}
+.tour-tooltip{position:absolute;z-index:10000;background:#1A1F2E;border:1px solid #6366F1;border-radius:12px;padding:20px;max-width:380px;min-width:280px;pointer-events:auto;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.tour-tooltip h3{font-size:1rem;color:#E2E8F0;margin-bottom:8px}
+.tour-tooltip p{font-size:.85rem;color:#D1D5DB;line-height:1.6;margin-bottom:16px;white-space:pre-wrap}
+.tour-tooltip .tour-step-counter{font-size:.7rem;color:#9CA3AF;margin-bottom:12px}
+.tour-tooltip .tour-actions{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tour-tooltip .tour-skip{font-size:.75rem;color:#9CA3AF;cursor:pointer;text-decoration:underline;background:none;border:none}
+.tour-tooltip .tour-skip:hover{color:#E2E8F0}
+.tour-modal-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;pointer-events:auto}
+.tour-modal{background:#111827;border:1px solid #6366F1;border-radius:16px;padding:32px;max-width:480px;width:90%;text-align:center}
+.tour-modal h2{font-size:1.4rem;color:#6366F1;margin-bottom:8px}
+.tour-modal p{font-size:.9rem;color:#D1D5DB;line-height:1.7;margin-bottom:24px;white-space:pre-wrap}
+.tour-modal .tour-lang-sel{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+.tour-modal .tour-lang-btn{padding:8px 24px;border:1px solid #374151;border-radius:8px;background:transparent;color:#9CA3AF;cursor:pointer;font-size:.85rem;font-weight:600}
+.tour-modal .tour-lang-btn.active{background:#6366F1;color:#fff;border-color:#6366F1}
+.tour-modal .tour-modal-actions{display:flex;gap:12px;justify-content:center}
+
 @media(max-width:1024px){
   .grid-3{grid-template-columns:1fr}
   .translate-grid{grid-template-columns:1fr}
@@ -255,8 +362,135 @@ textarea{min-height:120px}
   .metrics-grid{grid-template-columns:1fr}
   .compare-card{margin-bottom:12px}
   .voice-widget{bottom:76px;left:12px;width:40px;height:40px}
+  .tour-tooltip{max-width:90vw;min-width:auto}
 }
 `
+
+/* ───────── Tour Overlay Component ───────── */
+function TourOverlay({ tourStep, lang, onNext, onSkip, onSetLang }) {
+  const [spotlightStyle, setSpotlightStyle] = useState(null)
+  const [tooltipStyle, setTooltipStyle] = useState(null)
+
+  const tourTargets = {
+    1: '[data-tour="sidebar"]',
+    2: '[data-tour="main-panel"]',
+    3: '[data-tour="main-panel"]',
+    4: '[data-tour="main-panel"]',
+    5: '[data-tour="main-panel"]',
+    6: '[data-tour="cost-tracker"]',
+    7: '[data-tour="main-panel"]',
+    8: null,
+  }
+
+  useEffect(() => {
+    if (tourStep === 0 || tourStep >= TOUR_TOTAL - 1) {
+      setSpotlightStyle(null)
+      setTooltipStyle(null)
+      return
+    }
+    const selector = tourTargets[tourStep]
+    if (!selector) return
+    const el = document.querySelector(selector)
+    if (!el) return
+
+    // Scroll into view
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+    const positionElements = () => {
+      const rect = el.getBoundingClientRect()
+      const pad = 8
+      setSpotlightStyle({
+        top: rect.top - pad + window.scrollY,
+        left: rect.left - pad,
+        width: rect.width + pad * 2,
+        height: rect.height + pad * 2,
+      })
+
+      // Position tooltip
+      let ttTop = rect.bottom + pad + 12 + window.scrollY
+      let ttLeft = rect.left
+      // If tooltip would go off bottom, place above
+      if (rect.bottom + 250 > window.innerHeight) {
+        ttTop = rect.top - 220 + window.scrollY
+      }
+      // Clamp left
+      if (ttLeft + 380 > window.innerWidth) {
+        ttLeft = window.innerWidth - 400
+      }
+      if (ttLeft < 10) ttLeft = 10
+
+      setTooltipStyle({ top: ttTop, left: ttLeft })
+    }
+
+    // Small delay for DOM to settle after tab switch
+    const timer = setTimeout(positionElements, 150)
+    return () => clearTimeout(timer)
+  }, [tourStep])
+
+  const stepData = TOUR_TEXT[tourStep]
+  if (!stepData) return null
+
+  // Step 0: Welcome modal
+  if (tourStep === 0) {
+    return (
+      <div className="tour-modal-overlay">
+        <div className="tour-modal">
+          <h2>{stepData.title[lang]}</h2>
+          <p>{stepData.text[lang]}</p>
+          <div className="tour-lang-sel">
+            <button className={`tour-lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => onSetLang('en')}>EN</button>
+            <button className={`tour-lang-btn ${lang === 'es' ? 'active' : ''}`} onClick={() => onSetLang('es')}>ES</button>
+          </div>
+          <div className="tour-modal-actions">
+            <button className="btn btn-secondary" onClick={onSkip}>Skip</button>
+            <button className="btn btn-primary" onClick={onNext}>{stepData.btn[lang]}</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Step 8 (finish): modal-style
+  if (tourStep === TOUR_TOTAL - 1) {
+    return (
+      <div className="tour-modal-overlay">
+        <div className="tour-modal">
+          <h2>{stepData.title[lang]}</h2>
+          <p>{stepData.text[lang]}</p>
+          <div className="tour-modal-actions">
+            <button className="btn btn-primary" onClick={onSkip}>{stepData.btn[lang]}</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Steps 1-7: spotlight + tooltip
+  return (
+    <>
+      {spotlightStyle ? (
+        <>
+          <div className="tour-spotlight" style={spotlightStyle} />
+          {/* clickable backdrop around spotlight */}
+          <div className="tour-backdrop-fill" style={{ clipPath: `polygon(0% 0%, 0% 100%, ${spotlightStyle.left}px 100%, ${spotlightStyle.left}px ${spotlightStyle.top}px, ${spotlightStyle.left + spotlightStyle.width}px ${spotlightStyle.top}px, ${spotlightStyle.left + spotlightStyle.width}px ${spotlightStyle.top + spotlightStyle.height}px, ${spotlightStyle.left}px ${spotlightStyle.top + spotlightStyle.height}px, ${spotlightStyle.left}px 100%, 100% 100%, 100% 0%)` }} />
+        </>
+      ) : (
+        <div className="tour-backdrop-fill" />
+      )}
+      {tooltipStyle && (
+        <div className="tour-tooltip" style={{ top: tooltipStyle.top, left: tooltipStyle.left }}>
+          <div className="tour-step-counter">Step {tourStep} of {TOUR_TOTAL - 1} &middot; <button className="tour-skip" onClick={onSkip}>{TOUR_SKIP[lang]}</button></div>
+          <h3>{stepData.title[lang]}</h3>
+          <p>{stepData.text[lang]}</p>
+          <div className="tour-actions">
+            <span />
+            <button className="btn btn-primary btn-sm" onClick={onNext}>{stepData.btn[lang]}</button>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
 
 /* ───────── Components ───────── */
 function App() {
@@ -266,6 +500,18 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [costs, setCosts] = useState({ requests: 0, tokens: 0, cost: 0, byModel: {}, byUseCase: {} })
   const t = T[lang]
+
+  // Tour state — always starts active on every page load
+  const [tourStep, setTourStep] = useState(0)
+  const [tourActive, setTourActive] = useState(true)
+
+  // Refs for tour auto-execute
+  const analyzeRef = useRef(null)
+  const compareRef = useRef(null)
+  const translateRef = useRef(null)
+
+  // ElevenLabs — track if already loaded
+  const elevenLabsLoaded = useRef(false)
 
   const trackCost = (m, inTok, outTok, costUsd, useCase) => {
     setCosts(prev => {
@@ -286,13 +532,77 @@ function App() {
     { id: 'compare', icon: '\u{2696}' }
   ]
 
+  const handleTourNext = useCallback(() => {
+    const next = tourStep + 1
+    if (next >= TOUR_TOTAL) {
+      setTourActive(false)
+      return
+    }
+    setTourStep(next)
+
+    switch (next) {
+      case 1:
+        // Just highlight sidebar
+        break
+      case 2:
+        // Switch to Analyze tab
+        setTab('analyze')
+        break
+      case 3:
+        // Auto-trigger analysis with sample
+        setTab('analyze')
+        setTimeout(() => {
+          if (analyzeRef.current) analyzeRef.current(SAMPLES.business)
+        }, 200)
+        break
+      case 4:
+        // Switch to Compare tab
+        setTab('compare')
+        break
+      case 5:
+        // Auto-trigger comparison
+        setTab('compare')
+        setTimeout(() => {
+          if (compareRef.current) compareRef.current('Summarize this quarter\'s financial results')
+        }, 200)
+        break
+      case 6:
+        // Highlight cost tracker - scroll to metrics
+        setTimeout(() => {
+          const el = document.querySelector('[data-tour="cost-tracker"]')
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 100)
+        break
+      case 7:
+        // Switch to Translate tab
+        setTab('translate')
+        setTimeout(() => {
+          if (translateRef.current) translateRef.current('TechCorp reported strong Q4 results with 23% revenue growth.')
+        }, 200)
+        break
+      case 8:
+        // Finish step
+        break
+      default:
+        break
+    }
+  }, [tourStep])
+
+  const handleTourSkip = useCallback(() => {
+    setTourActive(false)
+  }, [])
+
+  const handleTourSetLang = useCallback((l) => {
+    setLang(l)
+  }, [])
+
   return (
     <>
       <style>{CSS}</style>
       <div className="app">
         <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>{sidebarOpen ? '\u2715' : '\u2630'}</button>
         <div className={`overlay ${sidebarOpen ? 'show' : ''}`} onClick={() => setSidebarOpen(false)} />
-        <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`} data-tour="sidebar">
           <div className="logo">{t.title}</div>
           <div className="sub">{t.subtitle}</div>
           {tabs.map(({ id, icon }) => (
@@ -320,14 +630,14 @@ function App() {
           </div>
         </aside>
 
-        <main className="main">
+        <main className="main" data-tour="main-panel">
           {tab === 'chat' && <ChatTab t={t} model={model} trackCost={trackCost} />}
-          {tab === 'analyze' && <AnalyzeTab t={t} trackCost={trackCost} />}
+          {tab === 'analyze' && <AnalyzeTab t={t} trackCost={trackCost} tourRunRef={analyzeRef} />}
           {tab === 'qa' && <QATab t={t} model={model} trackCost={trackCost} />}
           {tab === 'generate' && <GenerateTab t={t} model={model} trackCost={trackCost} />}
           {tab === 'extract' && <ExtractTab t={t} model={model} trackCost={trackCost} />}
-          {tab === 'translate' && <TranslateTab t={t} model={model} trackCost={trackCost} />}
-          {tab === 'compare' && <CompareTab t={t} trackCost={trackCost} />}
+          {tab === 'translate' && <TranslateTab t={t} model={model} trackCost={trackCost} tourRunRef={translateRef} />}
+          {tab === 'compare' && <CompareTab t={t} trackCost={trackCost} tourRunRef={compareRef} />}
           <MetricsPanel t={t} costs={costs} />
         </main>
 
@@ -340,6 +650,8 @@ function App() {
         </nav>
 
         <div className="voice-widget" title="ElevenLabs Voice" onClick={() => {
+          if (elevenLabsLoaded.current) return
+          elevenLabsLoaded.current = true
           const el = document.createElement('elevenlabs-convai')
           el.setAttribute('agent-id', 'agent_5601kmfx9vnzeb691cj64x2khmm0')
           document.body.appendChild(el)
@@ -351,6 +663,17 @@ function App() {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         </div>
       </div>
+
+      {/* Tour overlay */}
+      {tourActive && (
+        <TourOverlay
+          tourStep={tourStep}
+          lang={lang}
+          onNext={handleTourNext}
+          onSkip={handleTourSkip}
+          onSetLang={handleTourSetLang}
+        />
+      )}
     </>
   )
 }
@@ -403,19 +726,25 @@ function ChatTab({ t, model, trackCost }) {
 }
 
 /* ── Analyze ── */
-function AnalyzeTab({ t, trackCost }) {
+function AnalyzeTab({ t, trackCost, tourRunRef }) {
   const [text, setText] = useState('')
   const [result, setResult] = useState(null)
   const [step, setStep] = useState(-1)
-  const steps = ['Chunking', 'Keywords', 'Sentiment', 'Entities', 'Risks']
+  const steps = t.pipeline_steps
 
-  const run = (txt) => {
+  const run = useCallback((txt) => {
     const doc = txt || text
     if (!doc.trim()) return
+    if (txt) setText(txt)
     setResult(null); setStep(0)
     let s = 0
     const iv = setInterval(() => { s++; setStep(s); if (s >= steps.length) { clearInterval(iv); const r = analyzeText(doc); setResult(r); trackCost('rule-based', doc.split(/\s+/).length, 0, 0, 'analyze') } }, 300)
-  }
+  }, [text, steps, trackCost])
+
+  // Expose run to parent for tour
+  useEffect(() => {
+    if (tourRunRef) tourRunRef.current = run
+  }, [tourRunRef, run])
 
   return (
     <>
@@ -519,12 +848,12 @@ function QATab({ t, model, trackCost }) {
   return (
     <>
       <div className="card">
-        <div className="card-title">{'\u2753'} {t.qa}</div>
+        <div className="card-title">{'\u{2753}'} {t.qa}</div>
         {!ready ? (
           <>
             <textarea placeholder={t.paste_doc} value={doc} onChange={e => setDoc(e.target.value)} />
             <div className="btn-row">
-              <button className="btn btn-primary" onClick={() => ingest()}>Load Document</button>
+              <button className="btn btn-primary" onClick={() => ingest()}>{t.load_doc}</button>
               <button className="btn btn-secondary btn-sm" onClick={() => { setDoc(SAMPLES.business); ingest(SAMPLES.business) }}>{t.sample_biz}</button>
               <button className="btn btn-secondary btn-sm" onClick={() => { setDoc(SAMPLES.legal); ingest(SAMPLES.legal) }}>{t.sample_legal}</button>
             </div>
@@ -537,20 +866,20 @@ function QATab({ t, model, trackCost }) {
               <input className="input" placeholder={t.type_question} value={question} onChange={e => setQuestion(e.target.value)} onKeyDown={e => e.key === 'Enter' && ask()} />
               <button className="btn btn-primary" onClick={ask}>{t.ask}</button>
             </div>
-            <button className="btn btn-secondary btn-sm" style={{ marginTop: 8 }} onClick={() => { setReady(false); setAnswer(null); setDoc('') }}>Load Different Document</button>
+            <button className="btn btn-secondary btn-sm" style={{ marginTop: 8 }} onClick={() => { setReady(false); setAnswer(null); setDoc('') }}>{t.load_different}</button>
           </>
         )}
       </div>
       {loading && <div className="card"><span className="loading" /></div>}
       {answer && (
         <div className="card">
-          <div className="card-title">Answer</div>
+          <div className="card-title">{t.answer_title}</div>
           <p style={{ fontSize: '.875rem', lineHeight: 1.6, color: '#E2E8F0', whiteSpace: 'pre-wrap', marginBottom: 12 }}>{answer.answer}</p>
           <div style={{ fontSize: '.75rem', color: '#9CA3AF', marginBottom: 12 }}>{answer.model} | {answer.tokens} {t.tokens} | ${answer.cost_usd.toFixed(6)}</div>
-          <div className="card-title" style={{ fontSize: '.85rem' }}>Sources</div>
+          <div className="card-title" style={{ fontSize: '.85rem' }}>{t.sources}</div>
           {answer.sources.map((s, i) => (
             <div key={i} style={{ background: '#1A1F2E', padding: 10, borderRadius: 6, marginBottom: 6, fontSize: '.8rem', color: '#D1D5DB', borderLeft: '3px solid #6366F1' }}>
-              <span style={{ color: '#818CF8', fontWeight: 600 }}>Relevance: {(s.relevance * 100).toFixed(0)}%</span><br />{s.text}
+              <span style={{ color: '#818CF8', fontWeight: 600 }}>{t.relevance}: {(s.relevance * 100).toFixed(0)}%</span><br />{s.text}
             </div>
           ))}
         </div>
@@ -596,7 +925,7 @@ function GenerateTab({ t, model, trackCost }) {
       {result && (
         <div className="card">
           <div className="card-title" style={{ justifyContent: 'space-between' }}>
-            <span>Generated Content</span>
+            <span>{t.generated_content}</span>
             <button className="btn btn-secondary btn-sm" onClick={copy}>{copied ? t.copied : t.copy}</button>
           </div>
           <div style={{ background: '#1A1F2E', padding: 16, borderRadius: 8, fontSize: '.875rem', lineHeight: 1.6, color: '#E2E8F0', whiteSpace: 'pre-wrap' }}>{result.content}</div>
@@ -674,18 +1003,25 @@ function ExtractTab({ t, model, trackCost }) {
 }
 
 /* ── Translate ── */
-function TranslateTab({ t, model, trackCost }) {
+function TranslateTab({ t, model, trackCost, tourRunRef }) {
   const [text, setText] = useState('')
   const [target, setTarget] = useState('es')
   const [source, setSource] = useState('en')
   const [result, setResult] = useState(null)
 
-  const run = () => {
-    if (!text.trim()) return
-    const r = mockGenerate(`Translate to ${target === 'es' ? 'Spanish' : 'English'}: ${text}`, model)
+  const run = useCallback((overrideText) => {
+    const txt = overrideText || text
+    if (!txt.trim()) return
+    if (overrideText) setText(overrideText)
+    const r = mockGenerate(`Translate to ${target === 'es' ? 'Spanish' : 'English'}: ${txt}`, model)
     trackCost(model, r.input_tokens, r.output_tokens, r.cost_usd, 'translate')
-    setResult({ original: text, translated: r.text, source, target, model: r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd })
-  }
+    setResult({ original: txt, translated: r.text, source, target, model: r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd })
+  }, [text, target, source, model, trackCost])
+
+  // Expose run to parent for tour
+  useEffect(() => {
+    if (tourRunRef) tourRunRef.current = run
+  }, [tourRunRef, run])
 
   const swap = () => { const tmp = source; setSource(target); setTarget(tmp) }
 
@@ -702,7 +1038,7 @@ function TranslateTab({ t, model, trackCost }) {
           <select value={target} onChange={e => setTarget(e.target.value)}>
             <option value="es">Spanish</option><option value="en">English</option><option value="fr">French</option><option value="pt">Portuguese</option><option value="de">German</option>
           </select>
-          <button className="btn btn-primary" onClick={run}>{t.translate_btn}</button>
+          <button className="btn btn-primary" onClick={() => run()}>{t.translate_btn}</button>
         </div>
       </div>
       {result && (
@@ -718,16 +1054,18 @@ function TranslateTab({ t, model, trackCost }) {
 }
 
 /* ── Compare ── */
-function CompareTab({ t, trackCost }) {
+function CompareTab({ t, trackCost, tourRunRef }) {
   const [prompt, setPrompt] = useState('')
   const [result, setResult] = useState(null)
 
-  const run = () => {
-    if (!prompt.trim()) return
+  const run = useCallback((overridePrompt) => {
+    const p = overridePrompt || prompt
+    if (!p.trim()) return
+    if (overridePrompt) setPrompt(overridePrompt)
     const models = ['claude-sonnet', 'gpt-4o', 'gemini-pro']
     const results = {}
     models.forEach(m => {
-      const r = mockGenerate(prompt, m)
+      const r = mockGenerate(p, m)
       results[m] = r
       trackCost(m, r.input_tokens, r.output_tokens, r.cost_usd, 'compare')
     })
@@ -735,17 +1073,22 @@ function CompareTab({ t, trackCost }) {
     const cheapest = models.reduce((a, b) => results[a].cost_usd < results[b].cost_usd ? a : b)
     const detailed = models.reduce((a, b) => results[a].output_tokens > results[b].output_tokens ? a : b)
     setResult({ models: results, rankings: { fastest, cheapest, most_detailed: detailed } })
-  }
+  }, [prompt, trackCost])
+
+  // Expose run to parent for tour
+  useEffect(() => {
+    if (tourRunRef) tourRunRef.current = run
+  }, [tourRunRef, run])
 
   return (
     <>
       <div className="card">
         <div className="card-title">{'\u2696\uFE0F'} {t.compare}</div>
         <textarea placeholder={t.prompt_placeholder} value={prompt} onChange={e => setPrompt(e.target.value)} style={{ minHeight: 80 }} />
-        <div className="btn-row"><button className="btn btn-primary" onClick={run}>{t.compare_btn}</button></div>
+        <div className="btn-row"><button className="btn btn-primary" onClick={() => run()}>{t.compare_btn}</button></div>
       </div>
       {result && (
-        <div className="grid-3">
+        <div className="grid-3" data-tour="compare-results">
           {Object.entries(result.models).map(([m, r]) => (
             <div key={m} className="compare-card">
               <h4>
@@ -772,7 +1115,7 @@ function MetricsPanel({ t, costs }) {
   const maxModelCost = Math.max(...Object.values(costs.byModel).map(v => v.cost), 0.000001)
 
   return (
-    <div className="metrics-panel">
+    <div className="metrics-panel" data-tour="cost-tracker">
       <div className="card">
         <div className="card-title">{t.metrics}</div>
         <div className="metrics-grid">
