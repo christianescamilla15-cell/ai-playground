@@ -1,0 +1,81 @@
+MASTER SERVICE AGREEMENT
+
+Effective Date: January 1, 2026
+Agreement Number: MSA-2026-0042
+
+BETWEEN:
+Provider Corp ("Provider"), a Delaware corporation with principal offices at 100 Innovation Drive, San Francisco, CA 94105
+AND:
+Client LLC ("Client"), a Texas limited liability company with principal offices at 200 Commerce Street, Austin, TX 78701
+
+1. SCOPE OF SERVICES
+
+Provider shall deliver cloud computing, data analytics, and AI-powered business intelligence services ("Services") as described in each Statement of Work ("SOW") executed under this Agreement. Initial SOW value: $240,000 annually.
+
+2. TERM AND RENEWAL
+
+This Agreement shall commence on the Effective Date and continue for an initial term of 24 months. The Agreement shall automatically renew for successive 12-month periods unless either party provides 90 days written notice of non-renewal.
+
+3. FEES AND PAYMENT
+
+3.1 Annual License Fee: $240,000 (payable quarterly at $60,000)
+3.2 Implementation Fee: $45,000 (one-time)
+3.3 Support Fee: $36,000 annually (15% of license fee)
+3.4 Payment Terms: Net 30 days from invoice date
+3.5 Late Payment Penalty: 1.5% per month on outstanding balances
+
+4. LIABILITY
+
+4.1 The Provider's total aggregate liability under this Agreement shall not exceed $500,000.
+4.2 Neither party shall be liable for indirect, incidental, consequential, or punitive damages.
+4.3 The limitations in this section shall not apply to breaches of confidentiality or intellectual property infringement.
+
+5. TERMINATION
+
+5.1 Either party may terminate this Agreement with 30 days written notice for convenience.
+5.2 Either party may terminate immediately upon material breach that remains uncured for 15 business days after written notice.
+5.3 Upon termination, Provider shall return all Client data within 30 days.
+5.4 Early termination fee: 50% of remaining contract value.
+
+6. INDEMNIFICATION
+
+6.1 Client shall indemnify and hold harmless Provider against any third-party claims arising from Client's use of the Services.
+6.2 Provider shall indemnify Client against claims of intellectual property infringement related to the Services.
+
+7. CONFIDENTIALITY
+
+7.1 All proprietary information, trade secrets, and business data shared under this Agreement shall remain confidential.
+7.2 Confidentiality obligations survive termination for a period of 5 years.
+7.3 Exceptions: publicly available information, independently developed information, or information received from third parties without restriction.
+
+8. NON-COMPETE
+
+8.1 During the term and for 12 months following termination, Client agrees not to develop or market a competing product using Provider's proprietary methodologies.
+
+9. DISPUTE RESOLUTION
+
+9.1 All disputes shall first be submitted to mediation.
+9.2 If mediation fails within 30 days, disputes shall be resolved through binding arbitration under AAA Commercial Rules.
+9.3 Arbitration shall take place in San Francisco, California.
+9.4 The prevailing party shall be entitled to recover reasonable attorneys' fees.
+
+10. FORCE MAJEURE
+
+Neither party shall be liable for failure to perform due to events beyond reasonable control, including but not limited to natural disasters, pandemics, government actions, or infrastructure failures.
+
+11. DATA PROTECTION
+
+11.1 Provider shall comply with applicable data protection laws including CCPA and GDPR.
+11.2 Provider shall maintain SOC 2 Type II certification throughout the term.
+11.3 Data breach notification: within 72 hours of discovery.
+
+SIGNATURES:
+
+Provider Corp: ___________________________ Date: ___________
+Name: Sarah Chen, CEO
+
+Client LLC: ___________________________ Date: ___________
+Name: Michael Rodriguez, COO
+
+Contact: legal@providercorp.com | legal@clientllc.com
+Phone: +1-555-123-4567

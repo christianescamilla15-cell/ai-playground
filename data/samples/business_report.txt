@@ -1,0 +1,46 @@
+TECHCORP INC. — Q4 2025 QUARTERLY FINANCIAL REPORT
+
+Executive Summary
+
+TechCorp Inc. delivered strong financial results in Q4 2025, with revenue reaching $4.2M, representing a 23% increase year-over-year. This growth was driven by our expanding AI product suite and successful international expansion into Latin American markets.
+
+Financial Highlights
+
+Revenue: $4.2M (Q4 2025) vs $3.4M (Q4 2024) — 23% YoY growth
+Operating Margin: 18% (up from 13% in Q4 2024)
+Net Income: $756K (up 45% YoY)
+Cash Position: $8.1M (healthy runway of 18+ months)
+R&D Investment: $1.2M (29% of revenue)
+
+Customer Metrics
+
+Total Active Customers: 2,340 (up from 2,000 in Q3)
+Customer Satisfaction Score: 4.7/5.0 (all-time high)
+Net Promoter Score: 72 (industry average: 45)
+Customer Retention Rate: 94%
+Average Revenue Per Customer: $1,795/year
+
+International Expansion
+
+Brazil operations launched in September 2025 — contributing $320K in Q4
+Colombia pilot program started November 2025 — $184K in initial revenue
+Combined LATAM revenue: 12% of total company revenue
+Target: 25% of revenue from international markets by Q4 2026
+
+Key Risks and Challenges
+
+1. Market Competition: Three new competitors entered our segment in Q4, including one backed by $50M in Series B funding
+2. Currency Risk: BRL and COP volatility affecting LATAM margins (hedging strategy under review)
+3. Talent Acquisition: Engineering hiring taking 45 days average (target: 30 days)
+4. Infrastructure Costs: Cloud computing costs grew 31% vs 23% revenue growth
+
+Strategic Priorities for Q1 2026
+
+1. Launch AI Analytics Dashboard (beta) — target: 500 beta users
+2. Expand sales team by 8 headcount (4 LATAM, 4 US)
+3. Implement currency hedging for BRL/COP exposure
+4. Achieve SOC 2 Type II certification
+5. Invest $1.5M in AI product development
+
+Contact: investor.relations@techcorp.com
+Report Date: January 15, 2026
