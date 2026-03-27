@@ -435,16 +435,6 @@ export const PLAYGROUND_KB = {
     answer_es: 'Toda la interfaz es bilingue (Ingles/Espanol). Usa el toggle EN/ES en la barra lateral para cambiar todas las etiquetas, botones, placeholders y mensajes. El Tour Guiado tambien se adapta al idioma seleccionado. Este asistente tambien responde en ambos idiomas — intenta preguntarme algo en ingles!'
   },
 
-  voice_widget: {
-    question_patterns: [
-      'voice', 'voz', 'voice widget', 'widget de voz', 'elevenlabs',
-      'microphone', 'microfono', 'speak', 'hablar', 'voice button',
-      'boton de voz', 'voice assistant', 'asistente de voz'
-    ],
-    answer_en: 'The microphone button in the bottom-right corner activates the ElevenLabs voice widget. Click it once to load the conversational AI voice agent. You can then speak to the AI using your microphone. This is a separate feature from the text-based assistant and uses ElevenLabs\' voice technology.',
-    answer_es: 'El boton de microfono en la esquina inferior derecha activa el widget de voz de ElevenLabs. Haz clic una vez para cargar el agente de voz conversacional. Luego puedes hablar con la IA usando tu microfono. Esta es una funcion separada del asistente basado en texto y usa la tecnologia de voz de ElevenLabs.'
-  },
-
   sample_data: {
     question_patterns: [
       'sample data', 'datos de ejemplo', 'sample documents', 'documentos de ejemplo',

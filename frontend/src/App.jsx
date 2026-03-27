@@ -608,8 +608,7 @@ function App() {
   const compareRef = useRef(null)
   const translateRef = useRef(null)
 
-  // ElevenLabs — track if already loaded
-  const elevenLabsLoaded = useRef(false)
+
 
   const trackCost = (m, inTok, outTok, costUsd, useCase) => {
     setCosts(prev => {
@@ -752,19 +751,6 @@ function App() {
           </div>
         </nav>
 
-        <div className="voice-widget" title="ElevenLabs Voice" onClick={() => {
-          if (elevenLabsLoaded.current) return
-          elevenLabsLoaded.current = true
-          const el = document.createElement('elevenlabs-convai')
-          el.setAttribute('agent-id', 'agent_5601kmfx9vnzeb691cj64x2khmm0')
-          document.body.appendChild(el)
-          const s = document.createElement('script')
-          s.src = 'https://elevenlabs.io/convai-widget/index.js'
-          s.async = true
-          document.body.appendChild(s)
-        }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-        </div>
       </div>
 
       {/* Fixed Skip Tour button — always accessible */}
