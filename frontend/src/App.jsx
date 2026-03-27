@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
+import PlaygroundAssistant from './PlaygroundAssistant.jsx'
 
 /* ───────── i18n ───────── */
 const T = {
@@ -202,6 +203,84 @@ function mockGenerate(prompt, model = 'claude-sonnet', system = '') {
   const pr = PRICING[model] || PRICING['claude-sonnet']
   const cost = (inTok * pr.input + outTok * pr.output) / 1_000_000
   return { text, model, input_tokens: inTok, output_tokens: outTok, latency_ms: LATENCY[model] || 700, cost_usd: +cost.toFixed(6), provider: model.split('-')[0] }
+}
+
+/* ───────── API caller with mock fallback ───────── */
+async function callAPI(messages, { temperature = 0.7, max_tokens = 1024 } = {}) {
+  try {
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, temperature, max_tokens }),
+    })
+    if (resp.ok) {
+      const data = await resp.json()
+      return {
+        text: data.text,
+        provider: data.provider,
+        model: data.model,
+        input_tokens: data.tokens?.input || 0,
+        output_tokens: data.tokens?.output || 0,
+        latency_ms: 0,
+        cost_usd: 0,
+        fromAPI: true,
+      }
+    }
+  } catch (e) { /* fall through to mock */ }
+  // Fallback: use last user message content for mock
+  const lastMsg = messages[messages.length - 1]?.content || ''
+  const systemMsg = messages.find(m => m.role === 'system')?.content || ''
+  return { ...mockGenerate(lastMsg, 'claude-sonnet', systemMsg), fromAPI: false }
+}
+
+/* ───────── RAG chunker + keyword search ───────── */
+function chunkText(text, chunkSize = 500, overlap = 50) {
+  const chunks = []
+  let start = 0
+  while (start < text.length) {
+    const end = Math.min(start + chunkSize, text.length)
+    chunks.push({ text: text.slice(start, end), start, end })
+    start += chunkSize - overlap
+  }
+  return chunks
+}
+
+function findRelevantChunks(chunks, query, topK = 3) {
+  const queryWords = query.toLowerCase().match(/\w+/g) || []
+  const queryFiltered = queryWords.filter(w => !STOP.has(w) && w.length > 2)
+  const scored = chunks.map((chunk, idx) => {
+    const chunkLower = chunk.text.toLowerCase()
+    let score = 0
+    queryFiltered.forEach(w => {
+      const re = new RegExp(w, 'gi')
+      const matches = chunkLower.match(re)
+      if (matches) score += matches.length
+    })
+    return { ...chunk, score, index: idx }
+  })
+  return scored.filter(c => c.score > 0).sort((a, b) => b.score - a.score).slice(0, topK)
+}
+
+/* ───────── Translation mock per language ───────── */
+const LANG_NAMES = { en: 'English', es: 'Spanish', fr: 'French', pt: 'Portuguese', de: 'German' }
+
+function mockTranslate(text, sourceLang, targetLang) {
+  const prefixes = {
+    es: '[ES] ',
+    fr: '[FR] ',
+    pt: '[PT] ',
+    de: '[DE] ',
+    en: '[EN] ',
+  }
+  // Simple mock: prefix with target lang tag and slightly modify text
+  const mockTexts = {
+    es: 'El documento analizado presenta informacion sobre estrategia organizacional, desempeno financiero y posicionamiento de mercado. Los resultados muestran un crecimiento significativo.',
+    fr: "Le document analyse presente des informations sur la strategie organisationnelle, la performance financiere et le positionnement sur le marche. Les resultats montrent une croissance significative.",
+    pt: 'O documento analisado apresenta informacoes sobre estrategia organizacional, desempenho financeiro e posicionamento de mercado. Os resultados mostram um crescimento significativo.',
+    de: 'Das analysierte Dokument enthalt Informationen uber die Organisationsstrategie, die finanzielle Leistung und die Marktpositionierung. Die Ergebnisse zeigen ein signifikantes Wachstum.',
+    en: 'The analyzed document presents information about organizational strategy, financial performance, and market positioning. The results show significant growth.',
+  }
+  return mockTexts[targetLang] || `${prefixes[targetLang] || ''}${text}`
 }
 
 /* ───────── Analyzer (client-side) ───────── */
@@ -709,6 +788,9 @@ function App() {
           onSetLang={handleTourSetLang}
         />
       )}
+
+      {/* Playground Assistant */}
+      <PlaygroundAssistant lang={lang} />
     </>
   )
 }
@@ -722,18 +804,27 @@ function ChatTab({ t, model, trackCost }) {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [msgs])
 
-  const send = (text) => {
+  const send = async (text) => {
     const msg = text || input.trim()
     if (!msg) return
     setInput('')
     setMsgs(prev => [...prev, { role: 'user', content: msg }])
     setLoading(true)
-    setTimeout(() => {
+    try {
+      const apiMessages = [
+        { role: 'system', content: 'You are a helpful business AI assistant. Answer in the same language the user writes in.' },
+        ...msgs.slice(-6).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })),
+        { role: 'user', content: msg },
+      ]
+      const r = await callAPI(apiMessages)
+      trackCost(r.model || model, r.input_tokens, r.output_tokens, r.cost_usd, 'chat')
+      setMsgs(prev => [...prev, { role: 'ai', content: r.text, model: r.provider ? `${r.provider}/${r.model}` : r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd, latency: r.latency_ms }])
+    } catch (e) {
       const r = mockGenerate(msg, model, 'You are a helpful business AI assistant.')
       trackCost(model, r.input_tokens, r.output_tokens, r.cost_usd, 'chat')
       setMsgs(prev => [...prev, { role: 'ai', content: r.text, model: r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd, latency: r.latency_ms }])
-      setLoading(false)
-    }, 400)
+    }
+    setLoading(false)
   }
 
   return (
@@ -861,23 +952,42 @@ function QATab({ t, model, trackCost }) {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [chunks, setChunks] = useState(0)
+  const [docChunks, setDocChunks] = useState([])
 
   const ingest = (txt) => {
     const d = txt || doc; if (!d.trim()) return
-    const words = d.split(/\s+/); const c = Math.max(1, Math.ceil(words.length / 50))
-    setChunks(c); setReady(true); setDoc(d)
+    const chunked = chunkText(d, 500, 50)
+    setDocChunks(chunked); setReady(true); setDoc(d)
   }
 
-  const ask = () => {
+  const ask = async () => {
     if (!question.trim() || !ready) return
     setLoading(true); setAnswer(null)
-    setTimeout(() => {
+    try {
+      // Find relevant chunks via keyword matching
+      const relevant = findRelevantChunks(docChunks, question, 3)
+      const contextText = relevant.length > 0
+        ? relevant.map((c, i) => `[Source ${i + 1}]: ${c.text}`).join('\n\n')
+        : docChunks.slice(0, 2).map((c, i) => `[Source ${i + 1}]: ${c.text}`).join('\n\n')
+
+      const sources = (relevant.length > 0 ? relevant : docChunks.slice(0, 2)).map((c, i) => ({
+        text: c.text.length > 200 ? c.text.slice(0, 200) + '...' : c.text,
+        relevance: relevant.length > 0 ? Math.max(0.5, Math.min(0.99, c.score / (relevant[0]?.score || 1))) : 0.5,
+      }))
+
+      const apiMessages = [
+        { role: 'system', content: `You are a Q&A assistant. Answer the user's question ONLY based on the provided document context. If the context does not contain the answer, say so. Cite specific information from the sources.\n\nDocument context:\n${contextText}` },
+        { role: 'user', content: question },
+      ]
+      const r = await callAPI(apiMessages, { max_tokens: 512 })
+      trackCost(r.model || model, r.input_tokens, r.output_tokens, r.cost_usd, 'qa')
+      setAnswer({ answer: r.text, model: r.provider ? `${r.provider}/${r.model}` : r.model, sources, cost_usd: r.cost_usd, tokens: r.input_tokens + r.output_tokens })
+    } catch (e) {
       const r = mockGenerate(`Based on document: ${question}`, model)
       trackCost(model, r.input_tokens, r.output_tokens, r.cost_usd, 'qa')
-      setAnswer({ answer: r.text, model: r.model, sources: [{ text: doc.slice(0, 200) + '...', relevance: 0.87 }, { text: doc.slice(100, 300) + '...', relevance: 0.72 }], cost_usd: r.cost_usd, tokens: r.input_tokens + r.output_tokens })
-      setLoading(false)
-    }, 500)
+      setAnswer({ answer: r.text, model: r.model, sources: [{ text: doc.slice(0, 200) + '...', relevance: 0.87 }], cost_usd: r.cost_usd, tokens: r.input_tokens + r.output_tokens })
+    }
+    setLoading(false)
   }
 
   return (
@@ -896,12 +1006,12 @@ function QATab({ t, model, trackCost }) {
           </>
         ) : (
           <>
-            <p style={{ color: '#10B981', fontSize: '.85rem', marginBottom: 12 }}>{t.doc_ready} ({chunks} chunks)</p>
+            <p style={{ color: '#10B981', fontSize: '.85rem', marginBottom: 12 }}>{t.doc_ready} ({docChunks.length} chunks)</p>
             <div className="chat-input">
               <input className="input" placeholder={t.type_question} value={question} onChange={e => setQuestion(e.target.value)} onKeyDown={e => e.key === 'Enter' && ask()} />
               <button className="btn btn-primary" onClick={ask}>{t.ask}</button>
             </div>
-            <button className="btn btn-secondary btn-sm" style={{ marginTop: 8 }} onClick={() => { setReady(false); setAnswer(null); setDoc('') }}>{t.load_different}</button>
+            <button className="btn btn-secondary btn-sm" style={{ marginTop: 8 }} onClick={() => { setReady(false); setAnswer(null); setDoc(''); setDocChunks([]) }}>{t.load_different}</button>
           </>
         )}
       </div>
@@ -931,11 +1041,25 @@ function GenerateTab({ t, model, trackCost }) {
   const [result, setResult] = useState(null)
   const [copied, setCopied] = useState(false)
 
-  const gen = () => {
+  const [loading, setLoading] = useState(false)
+
+  const gen = async () => {
     if (!topic.trim()) return
-    const r = mockGenerate(`Generate ${fmt} content about: ${topic}. Tone: ${tone}`, model, `You are a ${tone} content writer.`)
-    trackCost(model, r.input_tokens, r.output_tokens, r.cost_usd, 'generate')
-    setResult({ content: r.text, tone, format: fmt, model: r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd })
+    setLoading(true)
+    try {
+      const apiMessages = [
+        { role: 'system', content: `You are a ${tone} content writer. Generate content in ${fmt} format. Write clear, well-structured content. If the user writes in Spanish, respond in Spanish.` },
+        { role: 'user', content: `Generate ${fmt} content about: ${topic}` },
+      ]
+      const r = await callAPI(apiMessages, { max_tokens: 1024 })
+      trackCost(r.model || model, r.input_tokens, r.output_tokens, r.cost_usd, 'generate')
+      setResult({ content: r.text, tone, format: fmt, model: r.provider ? `${r.provider}/${r.model}` : r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd })
+    } catch (e) {
+      const r = mockGenerate(`Generate ${fmt} content about: ${topic}. Tone: ${tone}`, model, `You are a ${tone} content writer.`)
+      trackCost(model, r.input_tokens, r.output_tokens, r.cost_usd, 'generate')
+      setResult({ content: r.text, tone, format: fmt, model: r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd })
+    }
+    setLoading(false)
   }
 
   const copy = () => { navigator.clipboard.writeText(result.content); setCopied(true); setTimeout(() => setCopied(false), 2000) }
@@ -955,9 +1079,10 @@ function GenerateTab({ t, model, trackCost }) {
             {['email', 'report', 'social', 'presentation'].map(v => <option key={v} value={v}>{t[v]}</option>)}
           </select>
         </div>
-        <button className="btn btn-primary" onClick={gen}>{t.generate_btn}</button>
+        <button className="btn btn-primary" onClick={gen} disabled={loading}>{loading ? '...' : t.generate_btn}</button>
       </div>
-      {result && (
+      {loading && <div className="card"><span className="loading" /></div>}
+      {result && !loading && (
         <div className="card">
           <div className="card-title" style={{ justifyContent: 'space-between' }}>
             <span>{t.generated_content}</span>
@@ -1044,13 +1169,31 @@ function TranslateTab({ t, model, trackCost, tourRunRef }) {
   const [source, setSource] = useState('en')
   const [result, setResult] = useState(null)
 
-  const run = useCallback((overrideText) => {
+  const [loading, setLoading] = useState(false)
+
+  const run = useCallback(async (overrideText) => {
     const txt = overrideText || text
     if (!txt.trim()) return
     if (overrideText) setText(overrideText)
-    const r = mockGenerate(`Translate to ${target === 'es' ? 'Spanish' : 'English'}: ${txt}`, model)
-    trackCost(model, r.input_tokens, r.output_tokens, r.cost_usd, 'translate')
-    setResult({ original: txt, translated: r.text, source, target, model: r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd })
+    setLoading(true)
+    try {
+      const srcName = LANG_NAMES[source] || source
+      const tgtName = LANG_NAMES[target] || target
+      const apiMessages = [
+        { role: 'system', content: `Translate the following text from ${srcName} to ${tgtName}. Only output the translation, nothing else.` },
+        { role: 'user', content: txt },
+      ]
+      const r = await callAPI(apiMessages, { temperature: 0.3, max_tokens: 1024 })
+      trackCost(r.model || model, r.input_tokens, r.output_tokens, r.cost_usd, 'translate')
+      setResult({ original: txt, translated: r.text, source, target, model: r.provider ? `${r.provider}/${r.model}` : r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd })
+    } catch (e) {
+      // Improved mock fallback with per-language responses
+      const translated = mockTranslate(txt, source, target)
+      const r = mockGenerate(`Translate: ${txt}`, model)
+      trackCost(model, r.input_tokens, r.output_tokens, r.cost_usd, 'translate')
+      setResult({ original: txt, translated, source, target, model: r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd })
+    }
+    setLoading(false)
   }, [text, target, source, model, trackCost])
 
   // Expose run to parent for tour
@@ -1073,10 +1216,11 @@ function TranslateTab({ t, model, trackCost, tourRunRef }) {
           <select value={target} onChange={e => setTarget(e.target.value)}>
             <option value="es">Spanish</option><option value="en">English</option><option value="fr">French</option><option value="pt">Portuguese</option><option value="de">German</option>
           </select>
-          <button className="btn btn-primary" onClick={() => run()}>{t.translate_btn}</button>
+          <button className="btn btn-primary" onClick={() => run()} disabled={loading}>{loading ? '...' : t.translate_btn}</button>
         </div>
       </div>
-      {result && (
+      {loading && <div className="card"><span className="loading" /></div>}
+      {result && !loading && (
         <div className="translate-grid">
           <div className="source-box"><h4>{t.original} ({result.source.toUpperCase()})</h4><div className="target-text">{result.original}</div></div>
           <div className="target-box"><h4>{t.translated} ({result.target.toUpperCase()})</h4><div className="target-text">{result.translated}</div>
@@ -1093,21 +1237,66 @@ function CompareTab({ t, trackCost, tourRunRef }) {
   const [prompt, setPrompt] = useState('')
   const [result, setResult] = useState(null)
 
-  const run = useCallback((overridePrompt) => {
+  const [loading, setLoading] = useState(false)
+
+  const run = useCallback(async (overridePrompt) => {
     const p = overridePrompt || prompt
     if (!p.trim()) return
     if (overridePrompt) setPrompt(overridePrompt)
-    const models = ['claude-sonnet', 'gpt-4o', 'gemini-pro']
-    const results = {}
-    models.forEach(m => {
-      const r = mockGenerate(p, m)
-      results[m] = r
-      trackCost(m, r.input_tokens, r.output_tokens, r.cost_usd, 'compare')
-    })
-    const fastest = models.reduce((a, b) => results[a].latency_ms < results[b].latency_ms ? a : b)
-    const cheapest = models.reduce((a, b) => results[a].cost_usd < results[b].cost_usd ? a : b)
-    const detailed = models.reduce((a, b) => results[a].output_tokens > results[b].output_tokens ? a : b)
-    setResult({ models: results, rankings: { fastest, cheapest, most_detailed: detailed } })
+    setLoading(true)
+
+    const modelStyles = [
+      { name: 'claude-sonnet', system: 'You are Claude, a thoughtful AI assistant. Provide a detailed, nuanced analysis with clear structure. Be thorough and analytical.' },
+      { name: 'gpt-4o', system: 'You are GPT-4o, a concise AI assistant. Respond with bullet points and key highlights. Be direct and action-oriented.' },
+      { name: 'gemini-pro', system: 'You are Gemini Pro, an efficient AI assistant. Give a brief, data-focused summary. Prioritize speed and clarity over detail.' },
+    ]
+
+    try {
+      const startTimes = modelStyles.map(() => Date.now())
+      const promises = modelStyles.map((style, idx) =>
+        callAPI([
+          { role: 'system', content: style.system },
+          { role: 'user', content: p },
+        ], { max_tokens: 512 }).then(r => {
+          const elapsed = Date.now() - startTimes[idx]
+          return { ...r, latency_ms: elapsed, model: style.name }
+        })
+      )
+      const responses = await Promise.all(promises)
+      const results = {}
+      responses.forEach((r, i) => {
+        const name = modelStyles[i].name
+        results[name] = {
+          text: r.text,
+          model: name,
+          provider: r.provider,
+          input_tokens: r.input_tokens,
+          output_tokens: r.output_tokens,
+          latency_ms: r.latency_ms,
+          cost_usd: r.cost_usd,
+        }
+        trackCost(name, r.input_tokens, r.output_tokens, r.cost_usd, 'compare')
+      })
+      const models = modelStyles.map(m => m.name)
+      const fastest = models.reduce((a, b) => results[a].latency_ms < results[b].latency_ms ? a : b)
+      const cheapest = models.reduce((a, b) => results[a].cost_usd < results[b].cost_usd ? a : b)
+      const detailed = models.reduce((a, b) => results[a].output_tokens > results[b].output_tokens ? a : b)
+      setResult({ models: results, rankings: { fastest, cheapest, most_detailed: detailed } })
+    } catch (e) {
+      // Fallback to mock
+      const models = ['claude-sonnet', 'gpt-4o', 'gemini-pro']
+      const results = {}
+      models.forEach(m => {
+        const r = mockGenerate(p, m)
+        results[m] = r
+        trackCost(m, r.input_tokens, r.output_tokens, r.cost_usd, 'compare')
+      })
+      const fastest = models.reduce((a, b) => results[a].latency_ms < results[b].latency_ms ? a : b)
+      const cheapest = models.reduce((a, b) => results[a].cost_usd < results[b].cost_usd ? a : b)
+      const detailed = models.reduce((a, b) => results[a].output_tokens > results[b].output_tokens ? a : b)
+      setResult({ models: results, rankings: { fastest, cheapest, most_detailed: detailed } })
+    }
+    setLoading(false)
   }, [prompt, trackCost])
 
   // Expose run to parent for tour
@@ -1120,9 +1309,10 @@ function CompareTab({ t, trackCost, tourRunRef }) {
       <div className="card">
         <div className="card-title">{'\u2696\uFE0F'} {t.compare}</div>
         <textarea placeholder={t.prompt_placeholder} value={prompt} onChange={e => setPrompt(e.target.value)} style={{ minHeight: 80 }} />
-        <div className="btn-row"><button className="btn btn-primary" onClick={() => run()}>{t.compare_btn}</button></div>
+        <div className="btn-row"><button className="btn btn-primary" onClick={() => run()} disabled={loading}>{loading ? '...' : t.compare_btn}</button></div>
       </div>
-      {result && (
+      {loading && <div className="card"><span className="loading" /></div>}
+      {result && !loading && (
         <div className="grid-3" data-tour="compare-results">
           {Object.entries(result.models).map(([m, r]) => (
             <div key={m} className="compare-card">
