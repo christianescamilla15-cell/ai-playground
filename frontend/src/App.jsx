@@ -81,83 +81,85 @@ const T = {
   }
 }
 
-/* ───────── Tour i18n ───────── */
+/* ───────── Tour i18n (Level 3) ───────── */
 const TOUR_TEXT = {
   0: {
     title: { en: 'AI Playground \u2014 Interactive AI Demo', es: 'AI Playground \u2014 Demo Interactiva de IA' },
     text: {
-      en: 'Explore 7 AI capabilities side by side: Chat, Document Analysis, Q&A, Content Generation, Data Extraction, Translation, and Model Comparison. Try each one with sample data and see real-time cost tracking.\n\nLet me give you a guided tour!',
-      es: 'Explora 7 capacidades de IA lado a lado: Chat, An\u00e1lisis de Documentos, Q&A, Generaci\u00f3n de Contenido, Extracci\u00f3n de Datos, Traducci\u00f3n, y Comparaci\u00f3n de Modelos. Prueba cada una con datos de ejemplo y observa el seguimiento de costos en tiempo real.\n\n\u00a1D\u00e9jame darte un tour guiado!'
+      en: 'Explore 7 AI capabilities: Chat, Document Analysis, Q&A, Content Generation, Data Extraction, Translation, and Model Comparison. Try each one with sample data and see real-time cost tracking.\n\nLet me show you with real actions!',
+      es: 'Explora 7 capacidades de IA: Chat, An\u00e1lisis de Documentos, Q&A, Generaci\u00f3n de Contenido, Extracci\u00f3n de Datos, Traducci\u00f3n, y Comparaci\u00f3n de Modelos. Prueba cada una con datos de ejemplo y seguimiento de costos en tiempo real.\n\n\u00a1D\u00e9jame mostrarte con acciones reales!'
     },
     btn: { en: 'Start Tour \u2192', es: 'Iniciar Tour \u2192' }
   },
   1: {
-    title: { en: 'Navigation & Models', es: 'Navegaci\u00f3n y Modelos' },
+    title: { en: 'Chat \u2014 AI Conversation', es: 'Chat \u2014 Conversaci\u00f3n con IA' },
     text: {
-      en: 'The sidebar has 7 use-case tabs: Chat, Analyze, Q&A, Generate, Extract, Translate, and Compare. Below them you can switch between Claude, GPT-4o, and Gemini Pro.',
-      es: 'La barra lateral tiene 7 pesta\u00f1as: Chat, Analizar, P&R, Generar, Extraer, Traducir y Comparar. Debajo puedes cambiar entre Claude, GPT-4o y Gemini Pro.'
+      en: 'Watch as I send a message to the AI. The chat tab connects to Groq/Claude and shows real-time token tracking.',
+      es: 'Observa c\u00f3mo env\u00edo un mensaje a la IA. La pesta\u00f1a Chat conecta con Groq/Claude y muestra seguimiento de tokens en tiempo real.'
     },
-    btn: { en: 'Next \u2192', es: 'Siguiente \u2192' }
+    btn: { en: 'Try it \u2192', es: 'Probar \u2192' }
   },
   2: {
     title: { en: 'Document Analysis', es: 'An\u00e1lisis de Documentos' },
     text: {
-      en: 'The Analyze tab processes any text and extracts keywords, sentiment, entities, and risk flags \u2014 all client-side. Let me run a demo for you!',
-      es: 'La pesta\u00f1a Analizar procesa cualquier texto y extrae palabras clave, sentimiento, entidades y alertas de riesgo \u2014 todo en el cliente. \u00a1D\u00e9jame ejecutar una demo!'
+      en: 'The Analyze tab extracts keywords, sentiment, entities, and risk flags. Watch the pipeline run on a sample business report!',
+      es: 'La pesta\u00f1a Analizar extrae palabras clave, sentimiento, entidades y alertas de riesgo. \u00a1Observa el pipeline ejecutarse en un reporte de negocios!'
     },
     btn: { en: 'Try it \u2192', es: 'Probar \u2192' }
   },
   3: {
     title: { en: 'Analysis Results', es: 'Resultados del An\u00e1lisis' },
     text: {
-      en: 'Here are the results: keyword frequency, sentiment gauge, extracted entities (money, dates, percentages), and risk flags for legal documents.',
-      es: 'Aqu\u00ed est\u00e1n los resultados: frecuencia de palabras clave, medidor de sentimiento, entidades extra\u00eddas (dinero, fechas, porcentajes) y alertas de riesgo para documentos legales.'
+      en: 'Here are the results: keyword frequency, sentiment gauge, extracted entities (money, dates, percentages), and risk flags.',
+      es: 'Resultados: frecuencia de palabras clave, medidor de sentimiento, entidades extra\u00eddas (dinero, fechas, porcentajes) y alertas de riesgo.'
     },
     btn: { en: 'Next \u2192', es: 'Siguiente \u2192' }
   },
   4: {
     title: { en: 'Model Comparison', es: 'Comparaci\u00f3n de Modelos' },
     text: {
-      en: 'The Compare tab sends the same prompt to all 3 models simultaneously and ranks them by speed, cost, and detail. Watch!',
-      es: 'La pesta\u00f1a Comparar env\u00eda el mismo prompt a los 3 modelos simult\u00e1neamente y los clasifica por velocidad, costo y detalle. \u00a1Mira!'
+      en: 'The Compare tab sends the same prompt to Claude, GPT-4o, and Gemini Pro simultaneously. Watch the race!',
+      es: 'La pesta\u00f1a Comparar env\u00eda el mismo prompt a Claude, GPT-4o y Gemini Pro simult\u00e1neamente. \u00a1Mira la competencia!'
     },
     btn: { en: 'Try it \u2192', es: 'Probar \u2192' }
   },
   5: {
     title: { en: 'Comparison Results', es: 'Resultados de Comparaci\u00f3n' },
     text: {
-      en: 'Each model card shows its response, latency, token count, and cost. Winner badges highlight the Fastest, Cheapest, and Most Detailed model.',
-      es: 'Cada tarjeta muestra la respuesta, latencia, tokens y costo. Las insignias resaltan el modelo M\u00e1s R\u00e1pido, M\u00e1s Barato y M\u00e1s Detallado.'
+      en: 'Each model card shows its response, latency, token count, and cost. Winner badges highlight Fastest, Cheapest, and Most Detailed.',
+      es: 'Cada tarjeta muestra respuesta, latencia, tokens y costo. Las insignias resaltan M\u00e1s R\u00e1pido, M\u00e1s Barato y M\u00e1s Detallado.'
     },
     btn: { en: 'Next \u2192', es: 'Siguiente \u2192' }
   },
   6: {
     title: { en: 'Cost Tracker', es: 'Rastreador de Costos' },
     text: {
-      en: 'Every action tracks token usage and estimated cost. The metrics panel shows totals by model and by use case \u2014 like a real production dashboard.',
-      es: 'Cada acci\u00f3n registra el uso de tokens y costo estimado. El panel de m\u00e9tricas muestra totales por modelo y por caso de uso \u2014 como un dashboard de producci\u00f3n real.'
+      en: 'Every action tracks token usage and cost. The metrics panel shows totals by model and use case \u2014 like a production dashboard.',
+      es: 'Cada acci\u00f3n registra uso de tokens y costo. El panel de m\u00e9tricas muestra totales por modelo y caso de uso \u2014 como un dashboard de producci\u00f3n.'
     },
     btn: { en: 'Next \u2192', es: 'Siguiente \u2192' }
   },
   7: {
     title: { en: 'Translation', es: 'Traducci\u00f3n' },
     text: {
-      en: 'The Translate tab supports English, Spanish, French, Portuguese, and German. Let me show you a quick demo!',
-      es: 'La pesta\u00f1a Traducir soporta ingl\u00e9s, espa\u00f1ol, franc\u00e9s, portugu\u00e9s y alem\u00e1n. \u00a1D\u00e9jame mostrarte una demo r\u00e1pida!'
+      en: 'The Translate tab supports EN, ES, FR, PT, and DE. Watch me translate a sample text from English to Spanish!',
+      es: 'La pesta\u00f1a Traducir soporta EN, ES, FR, PT y DE. \u00a1Observa c\u00f3mo traduzco un texto de ingl\u00e9s a espa\u00f1ol!'
     },
     btn: { en: 'Try it \u2192', es: 'Probar \u2192' }
   },
-  8: {
-    title: { en: 'Tour Complete!', es: '\u00a1Tour Completado!' },
-    text: {
-      en: 'You\'ve seen Analyze, Compare, and Translate in action. Feel free to explore Chat, Generate, Extract, and Q&A on your own \u2014 they all work the same way with sample data and real-time cost tracking!',
-      es: '\u00a1Has visto Analizar, Comparar y Traducir en acci\u00f3n! Explora Chat, Generar, Extraer y P&R por tu cuenta \u2014 todos funcionan igual con datos de ejemplo y seguimiento de costos en tiempo real!'
-    },
-    btn: { en: 'Finish Tour \u2713', es: 'Finalizar Tour \u2713' }
-  }
 }
-const TOUR_TOTAL = 9
+const TOUR_TOTAL = 8
 const TOUR_SKIP = { en: 'Skip Tour', es: 'Saltar Tour' }
+const TOUR_WATCH = { en: 'Watch the magic...', es: 'Observa la magia...' }
+const TOUR_COMPLETE = {
+  title: { en: 'Tour Complete!', es: '\u00a1Tour Completado!' },
+  body: { en: 'You\'ve seen Chat, Analyze, Compare, and Translate in action with real data. Explore Generate, Extract, and Q&A on your own \u2014 they all work the same way!', es: '\u00a1Has visto Chat, Analizar, Comparar y Traducir en acci\u00f3n con datos reales! Explora Generar, Extraer y P&R por tu cuenta \u2014 todos funcionan igual!' },
+  restart: { en: 'Restart Tour', es: 'Reiniciar Tour' },
+  explore: { en: 'Start Exploring', es: 'Empezar a Explorar' },
+  pagesVisited: { en: 'Features Explored', es: 'Features Exploradas' },
+  demosPlayed: { en: 'Real Actions', es: 'Acciones Reales' },
+  stepsCompleted: { en: 'Steps Completed', es: 'Pasos Completados' },
+}
 
 /* ───────── Sample data ───────── */
 const SAMPLES = {
@@ -445,24 +447,23 @@ textarea{min-height:120px}
 }
 `
 
-/* ───────── Tour Overlay Component ───────── */
-function TourOverlay({ tourStep, lang, onNext, onSkip, onSetLang }) {
+/* ───────── Tour Overlay Component (Level 3) ───────── */
+function TourOverlay({ tourStep, lang, actionRunning, showCompletion, onNext, onSkip, onRestart, onExplore, onSetLang }) {
   const [spotlightStyle, setSpotlightStyle] = useState(null)
   const [tooltipStyle, setTooltipStyle] = useState(null)
 
   const tourTargets = {
-    1: '[data-tour="sidebar"]',
+    1: '[data-tour="main-panel"]',
     2: '[data-tour="main-panel"]',
     3: '[data-tour="main-panel"]',
     4: '[data-tour="main-panel"]',
     5: '[data-tour="main-panel"]',
     6: '[data-tour="cost-tracker"]',
     7: '[data-tour="main-panel"]',
-    8: null,
   }
 
   useEffect(() => {
-    if (tourStep === 0 || tourStep >= TOUR_TOTAL - 1) {
+    if (tourStep === 0 || showCompletion) {
       setSpotlightStyle(null)
       setTooltipStyle(null)
       return
@@ -472,54 +473,90 @@ function TourOverlay({ tourStep, lang, onNext, onSkip, onSetLang }) {
     const el = document.querySelector(selector)
     if (!el) return
 
-    // Scroll into view
     el.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
     const positionElements = () => {
       const rect = el.getBoundingClientRect()
       const pad = 8
       setSpotlightStyle({
-        top: rect.top - pad + window.scrollY,
+        top: rect.top - pad,
         left: rect.left - pad,
         width: rect.width + pad * 2,
         height: rect.height + pad * 2,
       })
 
-      // Position tooltip with viewport clamping
-      const tooltipHeight = 200
+      const tooltipHeight = 240
       const tooltipWidth = 380
       const vpPad = 16
       let ttTop, ttLeft = rect.left
       const roomBelow = window.innerHeight - rect.bottom
-      const roomAbove = rect.top
 
       if (roomBelow >= tooltipHeight + vpPad + 12) {
-        // Position below element
-        ttTop = rect.bottom + 12 + window.scrollY
-      } else if (roomAbove >= tooltipHeight + vpPad + 12) {
-        // Position above element
-        ttTop = rect.top - tooltipHeight - 12 + window.scrollY
+        ttTop = rect.bottom + 12
       } else {
-        // Fallback: fixed bottom-center (handled in render)
         setTooltipStyle({ fallback: true })
         return
       }
 
-      // Clamp top to viewport
-      const scrollY = window.scrollY
-      ttTop = Math.max(vpPad + scrollY, ttTop)
-      ttTop = Math.min(window.innerHeight - tooltipHeight - vpPad + scrollY, ttTop)
-      // Clamp left to viewport
+      ttTop = Math.max(vpPad, ttTop)
+      ttTop = Math.min(window.innerHeight - tooltipHeight - vpPad, ttTop)
       ttLeft = Math.max(vpPad, ttLeft)
       ttLeft = Math.min(window.innerWidth - tooltipWidth - vpPad, ttLeft)
 
       setTooltipStyle({ top: ttTop, left: ttLeft })
     }
 
-    // Small delay for DOM to settle after tab switch
-    const timer = setTimeout(positionElements, 150)
+    const timer = setTimeout(positionElements, 200)
     return () => clearTimeout(timer)
-  }, [tourStep])
+  }, [tourStep, showCompletion])
+
+  // Completion modal
+  if (showCompletion) {
+    return (
+      <div className="tour-modal-overlay">
+        <div className="tour-modal">
+          {/* Success icon */}
+          <div style={{
+            width: 56, height: 56, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 16px', boxShadow: '0 0 30px rgba(99,102,241,0.3)',
+          }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h2>{TOUR_COMPLETE.title[lang]}</h2>
+          <p>{TOUR_COMPLETE.body[lang]}</p>
+
+          {/* Stats */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, margin: '20px 0', flexWrap: 'wrap' }}>
+            {[
+              { value: '7', label: TOUR_COMPLETE.stepsCompleted[lang], color: '#6366F1' },
+              { value: '4', label: TOUR_COMPLETE.demosPlayed[lang], color: '#10B981' },
+              { value: '10', label: TOUR_COMPLETE.pagesVisited[lang], color: '#F59E0B' },
+            ].map(s => (
+              <div key={s.label} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
+                <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Language toggle */}
+          <div className="tour-lang-sel">
+            <button className={`tour-lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => onSetLang('en')}>EN</button>
+            <button className={`tour-lang-btn ${lang === 'es' ? 'active' : ''}`} onClick={() => onSetLang('es')}>ES</button>
+          </div>
+
+          <div className="tour-modal-actions">
+            <button className="btn btn-secondary" onClick={onRestart}>{TOUR_COMPLETE.restart[lang]}</button>
+            <button className="btn btn-primary" onClick={onExplore}>{TOUR_COMPLETE.explore[lang]}</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const stepData = TOUR_TEXT[tourStep]
   if (!stepData) return null
@@ -544,29 +581,20 @@ function TourOverlay({ tourStep, lang, onNext, onSkip, onSetLang }) {
     )
   }
 
-  // Step 8 (finish): modal-style
-  if (tourStep === TOUR_TOTAL - 1) {
-    return (
-      <div className="tour-modal-overlay">
-        <div className="tour-modal">
-          <h2>{stepData.title[lang]}</h2>
-          <p>{stepData.text[lang]}</p>
-          <div className="tour-modal-actions">
-            <button className="btn btn-primary" onClick={onSkip}>{stepData.btn[lang]}</button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   // Steps 1-7: spotlight + tooltip
   return (
     <>
       {spotlightStyle ? (
         <>
-          <div className="tour-spotlight" style={spotlightStyle} />
-          {/* clickable backdrop around spotlight */}
           <div className="tour-backdrop-fill" style={{ clipPath: `polygon(0% 0%, 0% 100%, ${spotlightStyle.left}px 100%, ${spotlightStyle.left}px ${spotlightStyle.top}px, ${spotlightStyle.left + spotlightStyle.width}px ${spotlightStyle.top}px, ${spotlightStyle.left + spotlightStyle.width}px ${spotlightStyle.top + spotlightStyle.height}px, ${spotlightStyle.left}px ${spotlightStyle.top + spotlightStyle.height}px, ${spotlightStyle.left}px 100%, 100% 100%, 100% 0%)` }} />
+          <div style={{
+            position: 'fixed',
+            top: spotlightStyle.top - 4, left: spotlightStyle.left - 4,
+            width: spotlightStyle.width + 8, height: spotlightStyle.height + 8,
+            border: '2px solid rgba(99,102,241,0.6)', borderRadius: 12,
+            zIndex: 9999, pointerEvents: 'none',
+            animation: 'tourPulse 2s ease-in-out infinite',
+          }} />
         </>
       ) : (
         <div className="tour-backdrop-fill" />
@@ -575,20 +603,65 @@ function TourOverlay({ tourStep, lang, onNext, onSkip, onSetLang }) {
         <div className="tour-tooltip" style={
           tooltipStyle.fallback
             ? { position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', width: Math.min(400, window.innerWidth - 32), top: 'auto', zIndex: 10001 }
-            : { top: tooltipStyle.top, left: tooltipStyle.left }
+            : { position: 'fixed', top: tooltipStyle.top, left: tooltipStyle.left }
         }>
-          <div className="tour-step-counter">Step {tourStep} of {TOUR_TOTAL - 1} &middot; <button className="tour-skip" onClick={onSkip}>{TOUR_SKIP[lang]}</button></div>
+          <div className="tour-step-counter">
+            {lang === 'en' ? `Step ${tourStep} of ${TOUR_TOTAL - 1}` : `Paso ${tourStep} de ${TOUR_TOTAL - 1}`}
+            {' \u00b7 '}
+            {!actionRunning && <button className="tour-skip" onClick={onSkip}>{TOUR_SKIP[lang]}</button>}
+          </div>
           <h3>{stepData.title[lang]}</h3>
           <p>{stepData.text[lang]}</p>
-          <div className="tour-actions">
-            <span />
-            <button className="btn btn-primary btn-sm" onClick={onNext}>{stepData.btn[lang]}</button>
+
+          {/* Action running indicator */}
+          {actionRunning && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '8px 12px', borderRadius: 8, marginBottom: 12,
+              background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',
+            }}>
+              <div style={{
+                width: 8, height: 8, borderRadius: '50%', background: '#6366F1',
+                animation: 'tourActionPulse 1s ease-in-out infinite',
+              }} />
+              <span style={{ fontSize: 12, color: '#A5B4FC', fontWeight: 500 }}>{TOUR_WATCH[lang]}</span>
+            </div>
+          )}
+
+          {/* Progress dots */}
+          <div style={{ display: 'flex', gap: 4, marginBottom: 12, flexWrap: 'wrap' }}>
+            {Array.from({ length: TOUR_TOTAL - 1 }, (_, i) => (
+              <div key={i} style={{
+                width: i + 1 === tourStep ? 16 : 6, height: 6, borderRadius: 3,
+                background: i + 1 < tourStep ? '#6366F1' : i + 1 === tourStep ? '#818CF8' : 'rgba(255,255,255,0.1)',
+                transition: 'all 0.3s',
+              }} />
+            ))}
           </div>
+
+          {!actionRunning && (
+            <div className="tour-actions">
+              <span />
+              <button className="btn btn-primary btn-sm" onClick={onNext}>{stepData.btn[lang]}</button>
+            </div>
+          )}
         </div>
       )}
     </>
   )
 }
+
+/* ── Tour Action Keyframes ── */
+const tourActionKeyframes = `
+@keyframes tourActionPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+@keyframes tourPulse {
+  0%, 100% { border-color: rgba(99,102,241,0.6); box-shadow: 0 0 0 0 rgba(99,102,241,0.2); }
+  50% { border-color: rgba(99,102,241,0.9); box-shadow: 0 0 20px 4px rgba(99,102,241,0.15); }
+}
+`
 
 /* ───────── Components ───────── */
 function App() {
@@ -602,13 +675,26 @@ function App() {
   // Tour state — always starts active on every page load
   const [tourStep, setTourStep] = useState(0)
   const [tourActive, setTourActive] = useState(true)
+  const [tourActionRunning, setTourActionRunning] = useState(false)
+  const [tourShowCompletion, setTourShowCompletion] = useState(false)
+  const tourTimeoutsRef = useRef([])
 
   // Refs for tour auto-execute
   const analyzeRef = useRef(null)
   const compareRef = useRef(null)
   const translateRef = useRef(null)
+  const chatSendRef = useRef(null)
 
+  const addTourTimeout = useCallback((fn, ms) => {
+    const id = setTimeout(fn, ms)
+    tourTimeoutsRef.current.push(id)
+    return id
+  }, [])
 
+  const clearTourTimeouts = useCallback(() => {
+    tourTimeoutsRef.current.forEach(id => clearTimeout(id))
+    tourTimeoutsRef.current = []
+  }, [])
 
   const trackCost = (m, inTok, outTok, costUsd, useCase) => {
     setCosts(prev => {
@@ -630,67 +716,107 @@ function App() {
   ]
 
   const handleTourNext = useCallback(() => {
+    clearTourTimeouts()
     const next = tourStep + 1
     if (next >= TOUR_TOTAL) {
-      setTourActive(false)
+      // Tour complete -> show completion
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setTourShowCompletion(true)
       return
     }
     setTourStep(next)
 
     switch (next) {
-      case 1:
-        // Highlight sidebar + reset to chat tab
+      case 1: {
+        // Chat: type + send a message
         setTab('chat')
+        setTourActionRunning(true)
+        addTourTimeout(() => {
+          if (chatSendRef.current) chatSendRef.current('Hello, explain quantum computing in 2 sentences')
+        }, 500)
+        addTourTimeout(() => {
+          setTourActionRunning(false)
+        }, 2500)
         break
-      case 2:
-        // Switch to Analyze tab
+      }
+      case 2: {
+        // Switch to Analyze tab + run analysis
         setTab('analyze')
-        setTimeout(() => {
-          const el = document.querySelector('[data-tour="analyze-panel"]')
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        }, 100)
-        break
-      case 3:
-        // Auto-trigger analysis with sample
-        setTab('analyze')
-        setTimeout(() => {
+        setTourActionRunning(true)
+        addTourTimeout(() => {
           if (analyzeRef.current) analyzeRef.current(SAMPLES.business)
-        }, 200)
+        }, 400)
+        addTourTimeout(() => {
+          setTourActionRunning(false)
+        }, 2500)
         break
-      case 4:
-        // Switch to Compare tab
-        setTab('compare')
+      }
+      case 3: {
+        // Show analysis results
+        setTab('analyze')
         break
-      case 5:
-        // Auto-trigger comparison
+      }
+      case 4: {
+        // Compare tab + run comparison
         setTab('compare')
-        setTimeout(() => {
+        setTourActionRunning(true)
+        addTourTimeout(() => {
           if (compareRef.current) compareRef.current('Summarize this quarter\'s financial results')
-        }, 200)
+        }, 400)
+        addTourTimeout(() => {
+          setTourActionRunning(false)
+        }, 2500)
         break
-      case 6:
-        // Highlight cost tracker - scroll to metrics
-        setTimeout(() => {
+      }
+      case 5: {
+        // Show comparison results
+        setTab('compare')
+        break
+      }
+      case 6: {
+        // Cost tracker
+        addTourTimeout(() => {
           const el = document.querySelector('[data-tour="cost-tracker"]')
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        }, 100)
-        break
-      case 7:
-        // Switch to Translate tab
-        setTab('translate')
-        setTimeout(() => {
-          if (translateRef.current) translateRef.current('TechCorp reported strong Q4 results with 23% revenue growth.')
         }, 200)
         break
-      case 8:
-        // Finish step
+      }
+      case 7: {
+        // Translate
+        setTab('translate')
+        setTourActionRunning(true)
+        addTourTimeout(() => {
+          if (translateRef.current) translateRef.current('TechCorp reported strong Q4 results with 23% revenue growth.')
+        }, 400)
+        addTourTimeout(() => {
+          setTourActionRunning(false)
+        }, 2000)
         break
+      }
       default:
         break
     }
-  }, [tourStep])
+  }, [tourStep, clearTourTimeouts, addTourTimeout])
 
   const handleTourSkip = useCallback(() => {
+    clearTourTimeouts()
+    setTourActionRunning(false)
+    setTourActive(false)
+    setTourShowCompletion(false)
+  }, [clearTourTimeouts])
+
+  const handleTourRestart = useCallback(() => {
+    clearTourTimeouts()
+    setTourActionRunning(false)
+    setTourShowCompletion(false)
+    setTourStep(0)
+    setTab('chat')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setTourActive(true)
+  }, [clearTourTimeouts])
+
+  const handleTourExplore = useCallback(() => {
+    setTourShowCompletion(false)
     setTourActive(false)
   }, [])
 
@@ -700,7 +826,7 @@ function App() {
 
   return (
     <>
-      <style>{CSS}</style>
+      <style>{CSS}{tourActionKeyframes}</style>
       <div className="app">
         <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>{sidebarOpen ? '\u2715' : '\u2630'}</button>
         <div className={`overlay ${sidebarOpen ? 'show' : ''}`} onClick={() => setSidebarOpen(false)} />
@@ -733,7 +859,7 @@ function App() {
         </aside>
 
         <main className="main" data-tour="main-panel">
-          {tab === 'chat' && <ChatTab t={t} model={model} trackCost={trackCost} />}
+          {tab === 'chat' && <ChatTab t={t} model={model} trackCost={trackCost} tourSendRef={chatSendRef} />}
           {tab === 'analyze' && <AnalyzeTab t={t} trackCost={trackCost} tourRunRef={analyzeRef} />}
           {tab === 'qa' && <QATab t={t} model={model} trackCost={trackCost} />}
           {tab === 'generate' && <GenerateTab t={t} model={model} trackCost={trackCost} />}
@@ -765,12 +891,16 @@ function App() {
         </button>
       )}
       {/* Tour overlay */}
-      {tourActive && (
+      {(tourActive || tourShowCompletion) && (
         <TourOverlay
           tourStep={tourStep}
           lang={lang}
+          actionRunning={tourActionRunning}
+          showCompletion={tourShowCompletion}
           onNext={handleTourNext}
           onSkip={handleTourSkip}
+          onRestart={handleTourRestart}
+          onExplore={handleTourExplore}
           onSetLang={handleTourSetLang}
         />
       )}
@@ -782,7 +912,7 @@ function App() {
 }
 
 /* ── Chat ── */
-function ChatTab({ t, model, trackCost }) {
+function ChatTab({ t, model, trackCost, tourSendRef }) {
   const [msgs, setMsgs] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -790,7 +920,7 @@ function ChatTab({ t, model, trackCost }) {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [msgs])
 
-  const send = async (text) => {
+  const send = useCallback(async (text) => {
     const msg = text || input.trim()
     if (!msg) return
     setInput('')
@@ -811,7 +941,12 @@ function ChatTab({ t, model, trackCost }) {
       setMsgs(prev => [...prev, { role: 'ai', content: r.text, model: r.model, tokens: r.input_tokens + r.output_tokens, cost: r.cost_usd, latency: r.latency_ms }])
     }
     setLoading(false)
-  }
+  }, [input, msgs, model, trackCost])
+
+  // Expose send to parent for tour
+  useEffect(() => {
+    if (tourSendRef) tourSendRef.current = send
+  }, [tourSendRef, send])
 
   return (
     <div className="card">
