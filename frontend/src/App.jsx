@@ -513,8 +513,11 @@ function TourOverlay({ tourStep, lang, actionRunning, showCompletion, onNext, on
   // Completion modal
   if (showCompletion) {
     return (
-      <div className="tour-modal-overlay">
-        <div className="tour-modal">
+      <div className="tour-modal-overlay" style={{ cursor: 'pointer' }} onClick={(e) => {
+        if (e.target.closest('[data-tour-completion]') || e.target.closest('button')) return;
+        onExplore();
+      }}>
+        <div className="tour-modal" data-tour-completion>
           {/* Success icon */}
           <div style={{
             width: 56, height: 56, borderRadius: '50%',
@@ -564,8 +567,11 @@ function TourOverlay({ tourStep, lang, actionRunning, showCompletion, onNext, on
   // Step 0: Welcome modal
   if (tourStep === 0) {
     return (
-      <div className="tour-modal-overlay">
-        <div className="tour-modal">
+      <div className="tour-modal-overlay" style={{ cursor: 'pointer' }} onClick={(e) => {
+        if (e.target.closest('[data-tour-tooltip]') || e.target.closest('button')) return;
+        onNext();
+      }}>
+        <div className="tour-modal" data-tour-tooltip>
           <h2>{stepData.title[lang]}</h2>
           <p>{stepData.text[lang]}</p>
           <div className="tour-lang-sel">
@@ -586,7 +592,10 @@ function TourOverlay({ tourStep, lang, actionRunning, showCompletion, onNext, on
     <>
       {spotlightStyle ? (
         <>
-          <div className="tour-backdrop-fill" style={{ clipPath: `polygon(0% 0%, 0% 100%, ${spotlightStyle.left}px 100%, ${spotlightStyle.left}px ${spotlightStyle.top}px, ${spotlightStyle.left + spotlightStyle.width}px ${spotlightStyle.top}px, ${spotlightStyle.left + spotlightStyle.width}px ${spotlightStyle.top + spotlightStyle.height}px, ${spotlightStyle.left}px ${spotlightStyle.top + spotlightStyle.height}px, ${spotlightStyle.left}px 100%, 100% 100%, 100% 0%)` }} />
+          <div className="tour-backdrop-fill" style={{ cursor: 'pointer', clipPath: `polygon(0% 0%, 0% 100%, ${spotlightStyle.left}px 100%, ${spotlightStyle.left}px ${spotlightStyle.top}px, ${spotlightStyle.left + spotlightStyle.width}px ${spotlightStyle.top}px, ${spotlightStyle.left + spotlightStyle.width}px ${spotlightStyle.top + spotlightStyle.height}px, ${spotlightStyle.left}px ${spotlightStyle.top + spotlightStyle.height}px, ${spotlightStyle.left}px 100%, 100% 100%, 100% 0%)` }} onClick={(e) => {
+            if (e.target.closest('[data-tour-tooltip]') || e.target.closest('button')) return;
+            if (!actionRunning) onNext();
+          }} />
           <div style={{
             position: 'fixed',
             top: spotlightStyle.top - 4, left: spotlightStyle.left - 4,
@@ -597,10 +606,13 @@ function TourOverlay({ tourStep, lang, actionRunning, showCompletion, onNext, on
           }} />
         </>
       ) : (
-        <div className="tour-backdrop-fill" />
+        <div className="tour-backdrop-fill" style={{ cursor: 'pointer' }} onClick={(e) => {
+          if (e.target.closest('[data-tour-tooltip]') || e.target.closest('button')) return;
+          if (!actionRunning) onNext();
+        }} />
       )}
       {tooltipStyle && (
-        <div className="tour-tooltip" style={
+        <div className="tour-tooltip" data-tour-tooltip style={
           tooltipStyle.fallback
             ? { position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', width: Math.min(400, window.innerWidth - 32), top: 'auto', zIndex: 10001 }
             : { position: 'fixed', top: tooltipStyle.top, left: tooltipStyle.left }
