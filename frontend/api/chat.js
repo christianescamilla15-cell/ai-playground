@@ -30,7 +30,34 @@ export default async function handler(req, res) {
           tokens: { input: data.usage?.prompt_tokens || 0, output: data.usage?.completion_tokens || 0 },
         })
       }
-    } catch (e) { /* fall through to mock */ }
+    } catch (e) { /* fall through */ }
+  }
+
+  // Try Azure OpenAI (if configured)
+  const AZURE_KEY = process.env.AZURE_OPENAI_KEY
+  const AZURE_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT || 'https://nexusforge.openai.azure.com'
+  const AZURE_DEPLOYMENT = process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o-mini'
+
+  if (AZURE_KEY) {
+    try {
+      const azureRes = await fetch(
+        `${AZURE_ENDPOINT}/openai/deployments/${AZURE_DEPLOYMENT}/chat/completions?api-version=2024-02-01`,
+        {
+          method: 'POST',
+          headers: { 'api-key': AZURE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages, temperature, max_tokens }),
+        }
+      )
+      if (azureRes.ok) {
+        const data = await azureRes.json()
+        return res.json({
+          text: data.choices[0].message.content,
+          provider: 'azure-openai',
+          model: AZURE_DEPLOYMENT,
+          tokens: { input: data.usage?.prompt_tokens || 0, output: data.usage?.completion_tokens || 0 },
+        })
+      }
+    } catch (e) { /* fall through */ }
   }
 
   // Fallback to mock

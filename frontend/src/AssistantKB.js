@@ -575,6 +575,12 @@ export const PLAYGROUND_KB = {
     answer_en: 'This project is part of Christian Hernandez\'s professional portfolio. The source code demonstrates production-quality patterns for LLM integration, client-side NLP, and serverless architecture. If you\'re interested in the code or collaboration, reach out to Christian through his portfolio or LinkedIn.',
     answer_es: 'Este proyecto es parte del portafolio profesional de Christian Hernandez. El codigo fuente demuestra patrones de calidad de produccion para integracion de LLM, NLP client-side y arquitectura serverless. Si te interesa el codigo o colaboracion, contacta a Christian a traves de su portafolio o LinkedIn.'
   },
+
+  azure_ai: {
+    question_patterns: ['azure', 'microsoft', 'azure openai', 'document intelligence', 'azure ai'],
+    answer_en: 'The AI Playground supports Azure OpenAI as a fallback provider alongside Groq. When configured, requests route through Azure\'s GPT-4o-mini deployment. We also integrate Azure Document Intelligence for document analysis and Azure AI Search for semantic search capabilities.',
+    answer_es: 'El AI Playground soporta Azure OpenAI como proveedor alternativo junto a Groq. Cuando está configurado, las solicitudes se enrutan por el deployment GPT-4o-mini de Azure. También integramos Azure Document Intelligence para análisis de documentos y Azure AI Search para búsqueda semántica.',
+  },
 }
 
 // Follow-up suggestions for each topic
@@ -633,4 +639,5 @@ export const FOLLOWUPS = {
   groq_api: { en: ['Tech stack?', 'Model pricing?', 'Performance?'], es: ['Stack tecnologico?', 'Precios de modelos?', 'Rendimiento?'] },
   dark_theme: { en: ['Accessibility?', 'Mobile?', 'All features'], es: ['Accesibilidad?', 'Movil?', 'Todas las funciones'] },
   open_source: { en: ['About creator', 'About project', 'Tech stack?'], es: ['Sobre el creador', 'Sobre el proyecto', 'Stack tecnologico?'] },
+  azure_ai: { en: ['Tech stack?', 'All features', 'Groq API?'], es: ['Stack tecnologico?', 'Todas las funciones', 'API de Groq?'] },
 }
